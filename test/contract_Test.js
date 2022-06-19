@@ -117,11 +117,30 @@ describe("contract", function () {
         //after deleting the item
         const deleteItem = await this.testContract.deleteItem(wallet);
         const a = await this.testContract.totalNumber();
-        await expect(this.testContract.indexOf(wallet)).to.be.revertedWith("Key not found.");
-
-
-
-
+        expect(await a).to.equal(0);
+    });
+    it("totalBalance", async function () {
+        const wallet = ethers.Wallet.createRandom().address;
+        const set = await this.testContract.set(wallet,10000);
+        const balance = await this.testContract.totalBalance();
+        expect(await balance).to.equal(10000);
+        let randomNumbers = 10000;
+        for(let i = 0 ; i < 10; i++){
+            let number = randomInt(1,10000);
+            randomNumbers += number;
+            const newWallet = ethers.Wallet.createRandom().address;
+            const set = await this.testContract.set(newWallet,number);
+            const totalBalance = await this.testContract.totalBalance();
+        }
+        const totalBalance = await this.testContract.totalBalance();
+        expect(await totalBalance).to.equal(randomNumbers);
+        //after deleting the item
+        const deleteItem = await this.testContract.deleteItem(wallet);
+        const a = await this.testContract.totalBalance();
+        expect(await a).to.equal(randomNumbers-10000);
 
     });
 });
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
